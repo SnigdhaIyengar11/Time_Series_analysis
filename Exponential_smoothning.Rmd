@@ -1,0 +1,61 @@
+---
+output:
+  word_document: default
+  html_document: default
+---
+#INTRODUCTION:
+#the dataset extracted for time series modeling is of the dow jones #industrial average for the years 1941-2013.(DJI)
+#DOW-JONES INUDSTRIAL AVERAGE:DJI is a stock market index of 30 prominent #companies listed on stock exchanges in the United States. The DJIA is #one of the oldest and most commonly followed equity indexes.
+#it is a stock market index that tracks 30 large, publicly-owned #blue-chip companies trading on the New York Stock Exchange (NYSE) and #Nasdaq.
+#The Dow Jones Industrial Average is a widely-watched benchmark index in #the U.S. for blue-chip stocks.
+
+#OBJECTIVE: 
+#DEMONSTRATE SIMPLE EXPONENTIAL SMOOTHING OR DOUBLE EXPONENTIAL SMOOTHING BASED ON THE DATASET.
+#ESTIMATE THE NEXT 3 FORECASTED VALUES OF THE TIME SERIES MODEL
+#ESTIMATE THE ERROR PRODUCED BETWEEN THE OBSERVED AND FORECASTED VALUE FOR IN-SAMPLE AND OUT-SAMPLE DATA.
+
+
+```{r}
+library(forecast)
+data=read.csv("C:/Users/hp/Documents/ts_class_prac/DJI.csv")
+head(data)
+class(data)
+attach(data)
+ts=ts(dji,start=1941,end=2013,freq=1)
+ts.plot(ts)
+acf(ts)
+pacf(ts)
+
+#the data has trend present in it but no seasonality
+#so for forecasting purpose,holt's double exponential smoothing technique can be used to fit and forecast the model values
+forecasted=HoltWinters(ts,gamma=FALSE)
+forecasted
+plot(forecasted)
+
+#it can be seen from the plot that there is not much difference between the original values and the predicted values
+fit=forecasted$fitted[,1]
+fit
+forecasted_ahead=forecast(forecasted,h=3)
+print(forecasted_ahead)
+plot(forecasted_ahead)
+t=ts-fit
+t
+accuracy(dji,fit)
+```
+
+
+
+#INTERPREATION 
+#FOR THE DOW JONES INDUSTRIAL STOCK PRICES FROM THE YEAR 1943 TO 2013,THE RECORED STOCK PRICES HAVE A TREND
+#IN IT AND THE TREND CAN BE OBSERVED FROM THE TIME SERIES PLOT.
+#FOR THE TIME SERIES PLOT WITH TREND PRESENT IN IT WE FIT THE HOLT'S DOUBLE EXPONENTIAL SMOOTHENING MODEL WITH BETA=TRUE AND GAMMA=FALSE
+#WE FIT THE MODEL AND FORECAST THE FITTED VALUES OF THE IN SAMPLE DATA AND THE ERROR RECORED FOR THE FORECASTED FITTED VALUES IS 
+#825635.6.
+#THIS IS A VERY HIGH ERROR VALUE WHICH INTERPRETS THAT THE MODEL FITTED FOR THE DATA IS NOT SUITABLE AND A BETTER MODEL CAN BE FITTED ACROSS FOR BETTER ACCURACY
+#THE PREDICTED VALUES FOR THE NEXT 3 TIME IS:
+#2014       16864.75 
+#2015       17351.92 
+#2016       17839.10
+#THE ACCURACY FOR IN-SAMPLE DATA IS RMSE VALUE IS-883.9987 WHICH IS A LITTLE LESS BUT THE PREDICTIVE POWER IS STILL VERY INACURRATE AND A BETTER MODEL CAN BE FITTED FOR THIS PARTICULAR DATASET
+
+
